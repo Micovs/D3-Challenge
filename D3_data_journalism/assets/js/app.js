@@ -54,6 +54,52 @@ function yScale(Data, chosenYAxis) {
 
 }
 
+// function used for updating circles group with new tooltip
+function updateToolTip(chosenXAxis, circlesGroup) {
+
+  var xLabel;
+  var yLabel;
+
+  if (chosenXAxis === "poverty") {
+    xLabel = "poverty:";
+  } else if (chosenXAxis === "age") {
+    xLabel = "Age Median:";
+  }
+  else {
+    xLabel = "Household Income (Median)";
+  }
+
+  if (chosenYAxis === "healthcare") {
+    yLabel = "Lacks Healthcare (%):";
+  } else if (chosenYAxis === "obese") {
+    yLabel = "Obese (%):";
+  }
+  else {
+    yLabel = "Smokes:";
+  }
+
+
+  var toolTip = d3.tip()
+    .attr("class", "tooltip d3-tip")
+    .offset([80, -60])
+    .html(function(d) {
+      return (`${d.abbr} <br> ${xLabel}  ${d[chosenXAxis]} <br> ${yLabel}  ${d[chosenYAxis]}`);
+    });
+
+  circlesGroup.call(toolTip);
+
+  circlesGroup.on("mouseover", function(data) {
+    toolTip.show(data, this);
+  })
+    // onmouseout event
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data);
+    });
+
+  return circlesGroup;
+}
+
+
 // Retrieve data from the CSV file and execute everything below
 d3.csv("assets/data/data.csv").then(function(Data) {
   
@@ -136,9 +182,10 @@ d3.csv("assets/data/data.csv").then(function(Data) {
     .attr("dataValue", "poverty")
     .attr("class", "active")
     .attr("y", height * .12);
+
   // yAxis Labels
   var yLabel = svg.append("g")
-    .attr("class", "x aText")
+    .attr("class", "y aText")
     .style("font-size", "16")
     .attr("transform", `translate(0, ${height / 2}) rotate(-90)`);
   yLabel
@@ -159,6 +206,10 @@ d3.csv("assets/data/data.csv").then(function(Data) {
     .attr("dataValue", "healthcare")
     .attr("class", "active")
     .attr("y", height * .15);
+
+
+  // updateToolTip function above csv import
+  var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
 
 });
 
