@@ -110,6 +110,22 @@ function renderAxes(newXScale, xAxis) {
   return xAxis;
 }
 
+// function used for updating the text in the circles upon click on axis label
+
+function renderText(textGroup, chosenXAxis, chosenYAxis, xLinearScale, yLinearScale) {
+
+  // Append Text to Circles
+   textGroup.transition()
+   .duration(1000)
+   .attr("x", d => xLinearScale(d[chosenXAxis]))
+   .attr("y", d => yLinearScale(d[chosenYAxis] * .97))
+   .text(d => (d.abbr));
+  
+  return textGroup;  
+}
+
+
+
 // function used for updating circles group with a transition to
 // new circles
 function renderCircles(circlesGroup, newXScale, chosenXAxis) {
@@ -257,6 +273,9 @@ d3.csv("assets/data/data.csv").then(function(Data) {
 
         // updates circles with new x values
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+
+        // updates text with new values
+        textGroup = renderText(textGroup, chosenXAxis, chosenYAxis, xLinearScale, yLinearScale);
 
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
